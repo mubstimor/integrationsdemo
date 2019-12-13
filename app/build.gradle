@@ -4,6 +4,10 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply from: 'jacoco.gradle'
+
+apply plugin: 'com.google.firebase.appdistribution'
+
 android {
     compileSdkVersion 29
     defaultConfig {
@@ -15,9 +19,28 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            testCoverageEnabled true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            firebaseAppDistribution {
+                releaseNotes="Notes\n"
+                groups="android-testers"
+            }
+        }
+    }
+    testOptions {
+        animationsDisabled true
+        unitTests {
+            includeAndroidResources = true
+            all {
+                maxHeapSize = "1024m"
+                jacoco {
+                    includeNoLocationClasses = true
+                }
+            }
         }
     }
 }
@@ -31,4 +54,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    implementation 'com.google.firebase:firebase-analytics:17.2.0'
 }
+
+apply plugin: 'com.google.gms.google-services'
